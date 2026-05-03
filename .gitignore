@@ -1,0 +1,12 @@
+node_modules/
+.svelte-kit/
+frontend/build/
+backend/static/
+downloads/
+cookies/
+config/yt-dlp.conf
+config/gallery-dl.conf
+__pycache__/
+*.pyc
+.venv/
+.env

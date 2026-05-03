@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    container_name: claude-media-dl
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./downloads:/downloads
+      - ./config:/config
+      - ./cookies:/cookies
+    environment:
+      - DOWNLOAD_DIR=/downloads
+      - CONFIG_DIR=/config
+      - COOKIES_DIR=/cookies
+    restart: unless-stopped
