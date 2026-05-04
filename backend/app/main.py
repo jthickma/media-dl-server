@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from .routes import download, files, config, cookies, ws
+from .routes import download, files, cookies, ws
 
 app = FastAPI(title="claude-media-dl")
 
@@ -19,7 +19,6 @@ app.add_middleware(
 app.include_router(download.router)
 app.include_router(ws.router)
 app.include_router(files.router)
-app.include_router(config.router)
 app.include_router(cookies.router)
 
 

@@ -3,13 +3,17 @@ services:
     build: .
     container_name: claude-media-dl
     ports:
-      - "8080:8080"
+      - "${PORT:-8080}:8080"
     volumes:
       - ./downloads:/downloads
       - ./config:/config
       - ./cookies:/cookies
+      # Mount the host's gallery-dl config dir so changes apply without
+      # rebuilding the image and the web UI cannot edit it.
+      - ${HOME}/.config/gallery-dl:/root/.config/gallery-dl
     environment:
       - DOWNLOAD_DIR=/downloads
       - CONFIG_DIR=/config
       - COOKIES_DIR=/cookies
+      - PORT=8080
     restart: unless-stopped

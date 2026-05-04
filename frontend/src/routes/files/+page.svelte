@@ -77,7 +77,8 @@
         <span>/ {cwd}</span>
         <button onclick={() => load(listing.parent)}>↑ up</button>
       {/if}
-      <button onclick={() => load(cwd)} style="margin-left:auto">⟳</button>
+      <a class="zip" href="/api/files/zip?path={encodeURIComponent(cwd)}" title="Download current folder as zip" download style="margin-left:auto">⬇ zip</a>
+      <button onclick={() => load(cwd)} title="Refresh">⟳</button>
     </div>
     {#if listing.items.length === 0}
       <p class="muted">Empty.</p>
@@ -90,6 +91,9 @@
               <span class="name">{item.name}</span>
               <span class="size">{item.is_dir ? '' : fmtBytes(item.size)}</span>
             </button>
+            {#if item.is_dir}
+              <a class="zip" href="/api/files/zip?path={encodeURIComponent(item.path)}" title="Download as zip" download>⬇ zip</a>
+            {/if}
             <button class="del" onclick={() => del(item)} title="Delete">✕</button>
           </li>
         {/each}
@@ -145,6 +149,11 @@
   .size { color: #8b949e; font-size: 11px; }
   .del { background: none; border: none; color: #6e7681; padding: 4px 8px; cursor: pointer; }
   .del:hover { color: #da3633; background: none; }
+  .zip {
+    color: #8b949e; font-size: 11px; text-decoration: none; padding: 4px 8px;
+    border: 1px solid #30363d; border-radius: 4px; white-space: nowrap;
+  }
+  .zip:hover { color: #e6edf3; background: #21262d; text-decoration: none; }
   .vhead { display: flex; gap: 12px; align-items: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #21262d; }
   .vname { flex: 1; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .vbody { flex: 1; display: flex; align-items: center; justify-content: center; overflow: auto; }

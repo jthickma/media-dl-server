@@ -4,7 +4,6 @@
   const tabs = [
     { href: '/', label: 'Download' },
     { href: '/files', label: 'Files' },
-    { href: '/config', label: 'Config' },
     { href: '/cookies', label: 'Cookies' }
   ];
 </script>

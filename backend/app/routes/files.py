@@ -1,7 +1,9 @@
 import mimetypes
 import os
+import zipfile
 from pathlib import Path
 from typing import Optional
+from urllib.parse import quote
 
 from fastapi import APIRouter, HTTPException, Request, Response
 from fastapi.responses import FileResponse, StreamingResponse
@@ -58,6 +60,72 @@ async def delete(path: str):
     else:
         p.unlink()
     return {"ok": True}
+
+
+class _CountingWriter:
+    """Non-seekable, write+tell-only sink. zipfile detects no seek() and
+    switches to data descriptors so we can stream the archive."""
+
+    def __init__(self):
+        self._buf = bytearray()
+        self._pos = 0
+
+    def write(self, data) -> int:
+        self._buf.extend(data)
+        self._pos += len(data)
+        return len(data)
+
+    def tell(self) -> int:
+        return self._pos
+
+    def flush(self) -> None:
+        pass
+
+    def drain(self) -> bytes:
+        out = bytes(self._buf)
+        self._buf.clear()
+        return out
+
+
+@router.get("/api/files/zip")
+async def zip_dir(path: str = ""):
+    p = _safe(path) if path else DOWNLOAD_DIR
+    if not p.exists():
+        raise HTTPException(404, "not found")
+    if not p.is_dir():
+        raise HTTPException(400, "not a directory")
+
+    name = (p.name if p != DOWNLOAD_DIR else "downloads") + ".zip"
+
+    def gen():
+        out = _CountingWriter()
+        with zipfile.ZipFile(out, "w", zipfile.ZIP_STORED, allowZip64=True) as zf:
+            for sub in sorted(p.rglob("*")):
+                if not sub.is_file():
+                    continue
+                arc = sub.relative_to(p).as_posix()
+                zinfo = zipfile.ZipInfo.from_file(sub, arcname=arc)
+                zinfo.compress_type = zipfile.ZIP_STORED
+                with zf.open(zinfo, "w") as zfp, open(sub, "rb") as fsrc:
+                    while True:
+                        chunk = fsrc.read(256 * 1024)
+                        if not chunk:
+                            break
+                        zfp.write(chunk)
+                        if len(out._buf) >= 256 * 1024:
+                            yield out.drain()
+                data = out.drain()
+                if data:
+                    yield data
+        data = out.drain()
+        if data:
+            yield data
+
+    headers = {
+        "Content-Disposition": f"attachment; filename*=UTF-8''{quote(name)}",
+        "Cache-Control": "no-store",
+    }
+    return StreamingResponse(gen(), media_type="application/zip", headers=headers)
 
 
 @router.get("/media/{path:path}")
