@@ -9,6 +9,7 @@ GALLERY_HOSTS = {
     "danbooru.donmai.us", "gelbooru.com", "safebooru.org",
     "twitter.com", "x.com", "nitter.net",
     "tumblr.com",
+    "vsco.co", "www.vsco.co",
     "reddit.com", "www.reddit.com", "old.reddit.com",
     "artstation.com", "www.artstation.com",
 }

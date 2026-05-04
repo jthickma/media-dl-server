@@ -22,7 +22,7 @@ Open http://localhost:8080
 
 Volumes:
 - `./downloads` — output media
-- `./config` — `yt-dlp.conf`, `gallery-dl.conf` (auto-created blank)
+- `./config` — `yt-dlp.conf`, `gallery-dl.conf` (auto-created)
 - `./cookies` — uploaded cookies files
 
 ## Dev

@@ -22,18 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt \
 COPY backend/ /app/
 COPY --from=web /web/build /app/static
 
-# Default global gallery-dl config (vsco tls12 fix etc.).
-# Users override by mounting their own config dir at /root/.config/gallery-dl.
-RUN printf '%s\n' \
-    '{' \
-    '    "extractor": {' \
-    '        "vsco": {' \
-    '            "tls12": false' \
-    '        }' \
-    '    }' \
-    '}' > /etc/gallery-dl.conf
-
-VOLUME ["/downloads", "/config", "/cookies", "/root/.config/gallery-dl"]
+VOLUME ["/downloads", "/config", "/cookies"]
 
 ENV DOWNLOAD_DIR=/downloads \
     CONFIG_DIR=/config \

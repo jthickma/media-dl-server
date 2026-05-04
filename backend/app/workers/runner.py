@@ -4,7 +4,7 @@ import shlex
 from pathlib import Path
 from typing import Optional
 
-from ..config import DOWNLOAD_DIR, YTDLP_CONF, COOKIES_DIR
+from ..config import DOWNLOAD_DIR, YTDLP_CONF, GALLERYDL_CONF, COOKIES_DIR
 from ..jobs import Job
 
 PROGRESS_RE = re.compile(
@@ -29,9 +29,15 @@ async def run_ytdlp(job: Job, cookies: Optional[str] = None):
 
 
 async def run_gallerydl(job: Job, cookies: Optional[str] = None):
-    # gallery-dl autoloads $HOME/.config/gallery-dl/config.json (mounted from
-    # the host) and falls back to /etc/gallery-dl.conf shipped in the image.
+    # Keep app-managed gallery-dl settings in /config so Docker volume updates
+    # do not depend on gallery-dl's home-directory config discovery.
     args = ["gallery-dl", "-d", str(DOWNLOAD_DIR)]
+    if GALLERYDL_CONF.exists():
+        args += ["--config", str(GALLERYDL_CONF)]
+    args += [
+        "--option", "extractor.vsco.browser=firefox:linux",
+        "--option", "extractor.vsco.tls12=false",
+    ]
     if cookies:
         cpath = COOKIES_DIR / cookies
         if cpath.exists():
