@@ -1,7 +1,7 @@
 services:
   app:
     build: .
-    container_name: claude-media-dl
+    container_name: media-dl-server
     ports:
       - "${PORT:-8080}:8080"
     volumes:
