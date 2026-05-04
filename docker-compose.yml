@@ -1,6 +1,6 @@
 services:
   app:
-    build: .
+    image: ghcr.io/jthickma/media-dl-server:latest
     container_name: media-dl-server
     ports:
       - "${PORT:-8080}:8080"
